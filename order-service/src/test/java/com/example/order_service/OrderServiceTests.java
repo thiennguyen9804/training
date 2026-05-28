@@ -8,6 +8,7 @@ import java.util.Arrays;
 import com.example.order_service.client.StockServiceClient;
 import com.example.order_service.dto.OrderRequest;
 import com.example.order_service.entity.Order;
+import com.example.order_service.exception.StockNotAvailableException;
 import com.example.order_service.repository.OrderRepository;
 import com.example.order_service.service.OrderService;
 import org.junit.jupiter.api.BeforeEach;

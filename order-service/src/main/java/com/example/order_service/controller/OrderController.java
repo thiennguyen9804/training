@@ -15,17 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class OrderController {
 
-  private final OrderService orderService; // 🚀 Chỉ cần tiêm (Inject) duy nhất Service vào đây
+  private final OrderService orderService;
 
   @PostMapping
   public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest) {
-    System.out.println("Nhận request tại Controller: " + orderRequest);
-
-    // Gọi Service xử lý trọn gói logic bên dưới
     Order savedOrder = orderService.createOrder(orderRequest);
-
-    // Trả về kết quả thành công cho Client
     return ResponseEntity.ok(
-        "Tạo đơn hàng thành công! Mã đơn hàng của bạn là: " + savedOrder.getId());
+        "Your order is created successfully with id: " + savedOrder.getId());
   }
 }

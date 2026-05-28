@@ -1,43 +1,43 @@
 package com.example.order_service.client;
 
-import com.example.order_service.StockNotAvailableException;
-import com.example.order_service.StockServiceException;
-import com.example.order_service.dto.StockResponse;
+import com.example.order_service.dto.OrderRequest;
+import com.example.order_service.exception.InvalidStockException;
+import com.example.order_service.exception.StockNotAvailableException;
+import com.example.order_service.exception.StockServiceException;
+import com.example.order_service.dto.StockErrorResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class StockServiceClient {
 
   private final RestTemplate restTemplate;
+  public void verifyProductStocks(List<OrderRequest.ItemDto> items) {
+    String checkStocksUrl = "/check";
 
-  @Value("${app.api.check-stock-url}")
-  private String checkStockUrlTemplate;
-
-  /** Hàm chuyên trách kiểm tra kho cho duy nhất 1 sản phẩm */
-  public void verifyProductStock(Long productId, int quantity) {
     try {
-      StockResponse stock =
-          restTemplate.getForObject(
-              checkStockUrlTemplate, StockResponse.class, productId, quantity);
-
-      if (stock == null || !stock.available()) {
-        throw new StockNotAvailableException("Sản phẩm ID " + productId + " không đủ hàng.");
-      }
+      restTemplate.postForObject(
+              checkStocksUrl,
+              items,
+              Void.class
+      );
     } catch (HttpClientErrorException.BadRequest ex) {
-      StockResponse errorResponse = ex.getResponseBodyAs(StockResponse.class);
-      String msg = (errorResponse != null) ? errorResponse.message() : "Hết hàng";
-      throw new StockNotAvailableException("Lỗi kiểm tra sản phẩm ID " + productId + ": " + msg);
-    } catch (StockNotAvailableException ex) {
-      throw ex;
-    } catch (Exception e) {
-      throw new StockServiceException(
-          "Lỗi kết nối hệ thống kho khi kiểm tra sản phẩm ID " + productId + ": " + e.getMessage(),
-          e);
+      var stockErr = ex.getResponseBodyAs(StockErrorResponse.class);
+      throw switch (Objects.requireNonNull(stockErr).type()) {
+        case "InvalidStockException" -> new InvalidStockException(stockErr.message());
+        case "StockNotAvailableException" -> new StockNotAvailableException(stockErr.message());
+        default -> new RuntimeException("Stock Verify failed with message: " + stockErr.message());
+      };
+    } catch (HttpServerErrorException ex) {
+      throw new StockServiceException("Stock Service is currently down...");
     }
   }
+
 }

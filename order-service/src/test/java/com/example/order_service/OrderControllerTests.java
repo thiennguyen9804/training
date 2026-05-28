@@ -12,6 +12,8 @@ import com.example.order_service.entity.Order;
 import com.example.order_service.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +37,10 @@ public class OrderControllerTests {
   @BeforeEach
   public void setUp() {
     // Chuẩn bị dữ liệu request mẫu giống như Client gửi lên
-    sampleRequest = new OrderRequest();
-    sampleRequest.setCustomerId(99L);
 
-    OrderRequest.ItemDto item = new OrderRequest.ItemDto();
-    item.setProductId(101L);
-    item.setQuantity(2);
+    OrderRequest.ItemDto item = new OrderRequest.ItemDto(101L, 2);
+    sampleRequest = new OrderRequest(99L, List.of(item));
 
-    sampleRequest.setItems(Collections.singletonList(item));
   }
 
   // --- KỊCH BẢN: TẠO ĐƠN HÀNG THÀNH CÔNG ---

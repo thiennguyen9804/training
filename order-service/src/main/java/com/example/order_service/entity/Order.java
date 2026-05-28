@@ -16,12 +16,16 @@ public class Order {
   @Column(name = "customer_id", nullable = false)
   private Long customerId;
 
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(
+          mappedBy = "order",
+          cascade = CascadeType.ALL,
+          orphanRemoval = true,
+          fetch = FetchType.LAZY
+  )
   private List<OrderItem> items = new ArrayList<>();
 
-  // 🚀 THÊM MỘT HÀM TIỆN ÍCH (Helper Method) để tự gán mối quan hệ 2 chiều
   public void addOrderItem(OrderItem item) {
     items.add(item);
-    item.setOrder(this); // Bắt buộc phải gán dòng này để gán order_id lúc Insert
+    item.setOrder(this);
   }
 }

@@ -2,6 +2,7 @@ package com.example.stock_service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.example.stock_service.processor.StockCheckProcessor;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;

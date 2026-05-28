@@ -6,8 +6,9 @@ import static org.mockito.Mockito.*;
 import java.nio.charset.StandardCharsets;
 
 import com.example.order_service.client.StockServiceClient;
-import com.example.order_service.dto.StockResponse;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.order_service.dto.StockErrorResponse;
+import com.example.order_service.exception.StockNotAvailableException;
+import com.example.order_service.exception.StockServiceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,23 +28,17 @@ public class StockServiceClientTests {
   private StockServiceClient stockServiceClient; // Tự động tiêm RestTemplate giả vào đây
 
   private final String mockUrl =
-      "http://localhost:8081/v1/stocks/check?productId={productId}&quantity={quantity}";
-
-  @BeforeEach
-  public void setUp() {
-    // Gán giá trị thủ công cho biến @Value bằng Reflection vì không chạy qua Spring Context
-    ReflectionTestUtils.setField(stockServiceClient, "checkStockUrlTemplate", mockUrl);
-  }
+      "/check?productId={productId}&quantity={quantity}";
 
   // --- KỊCH BẢN 1: ĐỦ HÀNG (Không ném ra bất kỳ lỗi nào) ---
   @Test
   public void verifyProductStock_WhenStockIsAvailable_ShouldPassSuccessfully() {
     // Chuẩn bị dữ liệu giả lập
-    StockResponse mockResponse = new StockResponse(true, 10, "Đủ hàng!");
+    StockErrorResponse mockResponse = new StockErrorResponse(true, 10, "Đủ hàng!");
 
     // Định hình hành vi: Khi gọi restTemplate.getForObject với bất kỳ tham số nào, trả về
     // mockResponse
-    when(restTemplate.getForObject(eq(mockUrl), eq(StockResponse.class), anyLong(), anyInt()))
+    when(restTemplate.getForObject(eq(mockUrl), eq(StockErrorResponse.class), anyLong(), anyInt()))
         .thenReturn(mockResponse);
 
     // Chạy thử nghiệm và kiểm tra: Không được ném ra bất kỳ Exception nào
@@ -52,15 +46,15 @@ public class StockServiceClientTests {
 
     // Kiểm tra xem RestTemplate thực sự đã được gọi đúng 1 lần duy nhất hay chưa
     verify(restTemplate, times(1))
-        .getForObject(eq(mockUrl), eq(StockResponse.class), eq(1L), eq(5));
+        .getForObject(eq(mockUrl), eq(StockErrorResponse.class), eq(1L), eq(5));
   }
 
   // --- KỊCH BẢN 2: THIẾU HÀNG / HẾT HÀNG (StockResponse trả về available = false) ---
   @Test
   public void verifyProductStock_WhenStockNotAvailable_ShouldThrowStockNotAvailableException() {
-    StockResponse mockResponse = new StockResponse(false, 2, "Hết hàng hoặc không đủ số lượng!");
+    StockErrorResponse mockResponse = new StockErrorResponse(false, 2, "Hết hàng hoặc không đủ số lượng!");
 
-    when(restTemplate.getForObject(eq(mockUrl), eq(StockResponse.class), anyLong(), anyInt()))
+    when(restTemplate.getForObject(eq(mockUrl), eq(StockErrorResponse.class), anyLong(), anyInt()))
         .thenReturn(mockResponse);
 
     // Kiểm tra xem hệ thống có ném ra đúng lỗi StockNotAvailableException hay không
@@ -95,13 +89,13 @@ public class StockServiceClientTests {
                     null));
 
     // Mock getResponseBodyAs() trả về object đã parse sẵn
-    StockResponse errorResponse = new StockResponse(false, 0, "Hết hàng hoàn toàn!");
+    StockErrorResponse errorResponse = new StockErrorResponse(false, 0, "Hết hàng hoàn toàn!");
 
-    doReturn(errorResponse).when(badRequestException).getResponseBodyAs(StockResponse.class);
+    doReturn(errorResponse).when(badRequestException).getResponseBodyAs(StockErrorResponse.class);
 
     // Giả lập RestTemplate ném ra ngoại lệ HTTP 400
     when(restTemplate.getForObject(
-            eq(mockUrl), eq(StockResponse.class), any(Object.class), any(Object.class)))
+            eq(mockUrl), eq(StockErrorResponse.class), any(Object.class), any(Object.class)))
         .thenThrow(badRequestException);
 
     StockNotAvailableException exception =
@@ -120,7 +114,7 @@ public class StockServiceClientTests {
     // Giả lập một lỗi kết nối kỹ thuật bất kỳ (ví dụ RuntimeException mạng sập)
     RuntimeException networkError = new RuntimeException("Connection refused");
 
-    when(restTemplate.getForObject(eq(mockUrl), eq(StockResponse.class), anyLong(), anyInt()))
+    when(restTemplate.getForObject(eq(mockUrl), eq(StockErrorResponse.class), anyLong(), anyInt()))
         .thenThrow(networkError);
 
     // Hệ thống phải ném ra lỗi kỹ thuật StockServiceException
