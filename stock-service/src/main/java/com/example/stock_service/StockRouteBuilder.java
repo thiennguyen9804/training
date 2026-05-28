@@ -9,8 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /** A Camel Java DSL Router */
 @Component
 public class StockRouteBuilder extends RouteBuilder {
@@ -21,42 +19,43 @@ public class StockRouteBuilder extends RouteBuilder {
     onException(InvalidStockException.class)
         .handled(true)
         .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
-        .setBody(
-            simple(
-                """
-        {
-            "type": "InvalidStockException",
-            "error": "Bad Request",
-            "message": "${exception.message}"
-        }
-    """));
-onException(StockNotAvailableException.class)
+
+            .setBody(simple("new com.example.stock_service.StockErrorResponse('InvalidStockException', 'Bad Request', ${exception.message})"))
+    ;
+    onException(InvalidStockException.class)
             .handled(true)
             .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
-            .setBody(
-                    simple(
-                            """
-                    {
-                        "type": "StockNotAvailableException",
-                        "error": "Bad Request",
-                        "message": "${exception.message}"
-                    }
-                """)
-            );
-
-    rest("/v1/stocks/")
-        .post("/check")
-            .type(StockDto[].class)
-        .to("direct:checkStocks");
-
-    from("direct:checkStocks")
-            .setProperty("requestStock", body())
-            .process("mapperProcessor")
-            .to("sql:SELECT * FROM stocks WHERE id IN (:#in:${body})?outputClass=com.example.stock_service.StockDto")
+            .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
             .process(exchange -> {
-              var results = exchange.getIn().getBody(List.class);
-              logger.info("List of id: {}", results);
+              String msg = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, InvalidStockException.class).getMessage();
+              exchange.getMessage().setBody(new StockErrorResponse("InvalidStockException", "Bad Request", msg));
             });
 
+    onException(StockNotAvailableException.class)
+            .handled(true)
+            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
+            .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
+            .process(exchange -> {
+              String msg = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, StockNotAvailableException.class).getMessage();
+              exchange.getMessage().setBody(new StockErrorResponse("StockNotAvailableException", "Bad Request", msg));
+            });
+
+    rest("/v1/stocks/")
+            .post("/check")
+            .type(StockDto[].class)
+            .to("direct:checkStocks");
+
+    from("direct:checkStocks")
+            .marshal().json()
+            .choice()
+            .when(jsonpath("$[?(@.quantity < 0)]"))
+            .throwException(new InvalidStockException("Quantity cannot be negative!!!"))
+            .end()
+        .unmarshal().json(StockDto[].class)
+        .setProperty("requestStock", body())
+        .process("mapperProcessor")
+        .to(
+            "sql:SELECT * FROM stocks WHERE id IN (:#in:${body})?outputClass=com.example.stock_service.StockDto")
+        .process("stockCheckProcessor");
   }
 }
