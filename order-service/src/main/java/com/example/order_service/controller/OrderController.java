@@ -20,7 +20,6 @@ public class OrderController {
   @PostMapping
   public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest) {
     Order savedOrder = orderService.createOrder(orderRequest);
-    return ResponseEntity.ok(
-        "Your order is created successfully with id: " + savedOrder.getId());
+    return ResponseEntity.ok("Your order is created successfully with id: " + savedOrder.getId());
   }
 }

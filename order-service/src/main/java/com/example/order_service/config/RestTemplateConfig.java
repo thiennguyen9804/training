@@ -1,6 +1,5 @@
 package com.example.order_service.config;
 
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +13,6 @@ public class RestTemplateConfig {
 
   @Bean
   public RestTemplate restTemplate() {
-    return new RestTemplateBuilder()
-            .rootUri(rootUrl)
-            .build();
+    return new RestTemplateBuilder().rootUri(rootUrl).build();
   }
 }

@@ -17,11 +17,10 @@ public class Order {
   private Long customerId;
 
   @OneToMany(
-          mappedBy = "order",
-          cascade = CascadeType.ALL,
-          orphanRemoval = true,
-          fetch = FetchType.LAZY
-  )
+      mappedBy = "order",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
   private List<OrderItem> items = new ArrayList<>();
 
   public void addOrderItem(OrderItem item) {

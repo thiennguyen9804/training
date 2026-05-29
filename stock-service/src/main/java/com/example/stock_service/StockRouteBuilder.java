@@ -16,29 +16,22 @@ public class StockRouteBuilder extends RouteBuilder {
 
   public void configure() {
     restConfiguration().bindingMode(RestBindingMode.json);
-    onException(InvalidStockException.class)
-        .handled(true)
-        .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
+      onException(InvalidStockException.class, StockNotAvailableException.class)
+              .handled(true)
+              .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
+              .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
+                      .process(exchange -> {
+                            var ex = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, RuntimeException.class);
+                            var msg = ex.getMessage();
+                            String type = switch(ex) {
+                                case StockNotAvailableException e -> e.getClass().getSimpleName();
+                                case InvalidStockException e ->  e.getClass().getSimpleName();
+                                default -> "StockUnknownException";
+                            };
+                            var errRes = new StockErrorResponse(type, "Bad Request", msg);
+                            exchange.getIn().setBody(errRes);
+                      });
 
-            .setBody(simple("new com.example.stock_service.StockErrorResponse('InvalidStockException', 'Bad Request', ${exception.message})"))
-    ;
-    onException(InvalidStockException.class)
-            .handled(true)
-            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
-            .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-            .process(exchange -> {
-              String msg = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, InvalidStockException.class).getMessage();
-              exchange.getMessage().setBody(new StockErrorResponse("InvalidStockException", "Bad Request", msg));
-            });
-
-    onException(StockNotAvailableException.class)
-            .handled(true)
-            .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
-            .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-            .process(exchange -> {
-              String msg = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, StockNotAvailableException.class).getMessage();
-              exchange.getMessage().setBody(new StockErrorResponse("StockNotAvailableException", "Bad Request", msg));
-            });
 
     rest("/v1/stocks/")
             .post("/check")
@@ -46,11 +39,13 @@ public class StockRouteBuilder extends RouteBuilder {
             .to("direct:checkStocks");
 
     from("direct:checkStocks")
+            .log("Body type before marshaling: ${body.class}, Body: ${body}")
             .marshal().json()
             .choice()
             .when(jsonpath("$[?(@.quantity < 0)]"))
             .throwException(new InvalidStockException("Quantity cannot be negative!!!"))
             .end()
+        .log("Body type before unmarshaling: ${body.class}, Body: ${body}")
         .unmarshal().json(StockDto[].class)
         .setProperty("requestStock", body())
         .process("mapperProcessor")

@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrderDbManager {
 
-    private final OrderRepository orderRepository;
+  private final OrderRepository orderRepository;
 
-    @Transactional
-    public Order saveOrderTx(OrderRequest orderRequest) {
-        Order newOrder = new Order();
-        newOrder.setCustomerId(orderRequest.customerId());
+  @Transactional
+  public Order saveOrderTx(OrderRequest orderRequest) {
+    Order newOrder = new Order();
+    newOrder.setCustomerId(orderRequest.customerId());
 
-        for (OrderRequest.ItemDto itemDto : orderRequest.items()) {
-            OrderItem dbItem = new OrderItem(itemDto.productId(), itemDto.quantity());
-            newOrder.addOrderItem(dbItem);
-        }
-        return orderRepository.save(newOrder);
+    for (OrderRequest.ItemDto itemDto : orderRequest.items()) {
+      OrderItem dbItem = new OrderItem(itemDto.id(), itemDto.quantity());
+      newOrder.addOrderItem(dbItem);
     }
+    return orderRepository.save(newOrder);
+  }
 }

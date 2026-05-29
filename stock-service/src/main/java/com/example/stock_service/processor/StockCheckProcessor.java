@@ -28,6 +28,7 @@ public class StockCheckProcessor implements Processor {
                     StockDto::getQuantity // Lấy số lượng trực tiếp từ đối tượng
                     ));
 
+    @SuppressWarnings("unchecked")
     List<StockDto> requestStock = exchange.getProperty("requestStock", List.class);
 
     boolean isOutOfStock =
