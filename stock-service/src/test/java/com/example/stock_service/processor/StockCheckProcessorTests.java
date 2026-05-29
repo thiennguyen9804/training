@@ -2,7 +2,7 @@ package com.example.stock_service.processor;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.example.stock_service.StockDto;
+import com.example.stock_service.dto.StockDto;
 import com.example.stock_service.exception.StockNotAvailableException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;

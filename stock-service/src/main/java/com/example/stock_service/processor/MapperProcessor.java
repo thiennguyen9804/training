@@ -1,6 +1,6 @@
 package com.example.stock_service.processor;
 
-import com.example.stock_service.StockDto;
+import com.example.stock_service.dto.StockDto;
 import java.util.Arrays;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

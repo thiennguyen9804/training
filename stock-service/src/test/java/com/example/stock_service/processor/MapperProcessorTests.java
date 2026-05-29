@@ -1,6 +1,6 @@
 package com.example.stock_service.processor;
 import static org.junit.jupiter.api.Assertions.*;
-import com.example.stock_service.StockDto;
+import com.example.stock_service.dto.StockDto;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -12,12 +12,12 @@ import java.util.List;
 
 public class MapperProcessorTests {
     private MapperProcessor processor;
-    private CamelContext context;
     private Exchange exchange;
+
     @BeforeEach
     public void setUp() {
         processor = new MapperProcessor();
-        context = new DefaultCamelContext();
+        CamelContext context = new DefaultCamelContext();
         exchange = new DefaultExchange(context);
         StockDto mockRequestDto1 = new StockDto(1L, 9999);
         StockDto mockRequestDto2 = new StockDto(2L, 9999);

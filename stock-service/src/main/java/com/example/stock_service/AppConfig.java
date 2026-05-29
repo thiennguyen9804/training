@@ -12,9 +12,9 @@ public class AppConfig {
   String contextPath;
 
   @Bean
-  ServletRegistrationBean servletRegistrationBean() {
-    ServletRegistrationBean servlet =
-        new ServletRegistrationBean(new CamelHttpTransportServlet(), contextPath + "/*");
+  ServletRegistrationBean<?> servletRegistrationBean() {
+    ServletRegistrationBean<?> servlet =
+        new ServletRegistrationBean<>(new CamelHttpTransportServlet(), contextPath + "/*");
     servlet.setName("CamelServlet");
     return servlet;
   }
