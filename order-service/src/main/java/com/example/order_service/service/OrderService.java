@@ -23,6 +23,7 @@ public class OrderService {
     var createdOrder = orderDbManager.saveOrderTx(orderRequest);
     var shipmentEvent =
         new ShipmentEvent(createdOrder.getId(), createdOrder.getCustomerId(), "CREATED");
+    kafkaTemplate.send("shipping-topic", shipmentEvent);
     return createdOrder;
   }
 

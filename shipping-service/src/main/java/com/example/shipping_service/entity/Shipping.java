@@ -20,24 +20,23 @@ public class Shipping {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 🚀 Lưu ID dạng số thuần túy (Không dùng @OneToOne vì bảng Order nằm ở DB khác)
     @Column(name = "order_id", nullable = false, unique = true)
     private Long orderId;
 
-    @Column(name = "tracking_number", nullable = false, unique = true, length = 100)
+    @Column(name = "tracking_number", nullable = false, unique = true, length = 36)
     private String trackingNumber;
 
-    @Column(name = "shipping_status", nullable = false, length = 50)
+    @Column(name = "shipping_status", nullable = false)
     private String shippingStatus;
 
     @Column(name = "address", nullable = false, columnDefinition = "TEXT")
     private String address;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

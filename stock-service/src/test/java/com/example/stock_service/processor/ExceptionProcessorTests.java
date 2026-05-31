@@ -30,7 +30,6 @@ public class ExceptionProcessorTests {
         exceptionProcessor.process(exchange);
         Message message = exchange.getIn();
         StockErrorResponse body = message.getBody(StockErrorResponse.class);
-
         assertNotNull(body);
         assertEquals("StockNotAvailableException", body.type());
         assertEquals("Bad Request", body.error());

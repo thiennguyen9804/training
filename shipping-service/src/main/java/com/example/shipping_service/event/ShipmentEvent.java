@@ -1,4 +1,4 @@
-package com.example.shipping_service.dto;
+package com.example.shipping_service.event;
 
 import java.io.Serializable;
 
