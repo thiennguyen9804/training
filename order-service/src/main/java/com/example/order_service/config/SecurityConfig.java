@@ -23,7 +23,7 @@ public class SecurityConfig {
     return httpSecurity
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            auth -> auth.anyRequest().authenticated())
+            auth -> auth.anyRequest().permitAll())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
