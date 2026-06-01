@@ -17,6 +17,7 @@ import java.util.UUID;
 public class ShipmentEventListener {
     private final ShippingRepository shippingRepository;
     private final CustomerClientService customerClientService;
+
     @KafkaListener(topics = "shipping-topic", groupId = "order-service-group")
     public void printShippingInfo(
         @Payload ShipmentEvent event
