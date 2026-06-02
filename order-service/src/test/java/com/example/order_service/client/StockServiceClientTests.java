@@ -7,6 +7,7 @@ import com.example.order_service.dto.OrderRequest;
 import com.example.order_service.dto.StockErrorResponse;
 import com.example.order_service.exception.InvalidStockException;
 import com.example.order_service.exception.StockNotAvailableException;
+import com.example.order_service.exception.StockServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,7 +66,6 @@ public class StockServiceClientTests {
         StockNotAvailableException.class, () -> stockServiceClient.verifyProductStocks(items));
   }
 
-  // --- KỊCH BẢN 3: ĐÁP ỨNG TỪ CAMEL TRẢ VỀ LỖI NGHIỆP VỤ (HTTP 400 Bad Request) ---
   @Test
   public void
       verifyProductStock_WhenStockServiceReturnErrorWithInvalidStockException_ShouldThrowInvalidStockException()
@@ -85,5 +86,46 @@ public class StockServiceClientTests {
     when(restTemplate.postForObject(eq("/check"), anyList(), eq(Void.class)))
         .thenThrow(spyException);
     assertThrows(InvalidStockException.class, () -> stockServiceClient.verifyProductStocks(items));
+  }
+
+  @Test
+  public void
+  verifyProductStock_WhenStockServiceReturnErrorWithHttpServerErrorException_ShouldThrowStockServiceException()
+          throws JsonProcessingException {
+    StockErrorResponse mockErrorBody = new StockErrorResponse("", "", "");
+    String jsonError = objectMapper.writeValueAsString(mockErrorBody);
+
+    HttpServerErrorException httpClientErrorException =
+            HttpServerErrorException.create(
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            "Internal Server Error",
+                            new HttpHeaders(),
+                            jsonError.getBytes(StandardCharsets.UTF_8),
+                            StandardCharsets.UTF_8);
+    when(restTemplate.postForObject(eq("/check"), anyList(), eq(Void.class)))
+            .thenThrow(httpClientErrorException);
+    assertThrows(StockServiceException.class, () -> stockServiceClient.verifyProductStocks(items));
+  }
+
+  @Test
+  public void
+  verifyProductStock_WhenStockServiceReturnErrorWithUnknownTypeException_ShouldThrowRuntimeException()
+          throws JsonProcessingException {
+    StockErrorResponse mockErrorBody = new StockErrorResponse("Thien is too freaking handsome Exception", "", "");
+    String jsonError = objectMapper.writeValueAsString(mockErrorBody);
+    HttpClientErrorException.BadRequest badRequestException =
+            (HttpClientErrorException.BadRequest)
+                    HttpClientErrorException.create(
+                            HttpStatus.BAD_REQUEST,
+                            "Bad Request",
+                            new HttpHeaders(),
+                            jsonError.getBytes(StandardCharsets.UTF_8),
+                            StandardCharsets.UTF_8);
+    var spyException = spy(badRequestException);
+    doReturn(mockErrorBody).when(spyException).getResponseBodyAs(StockErrorResponse.class);
+    when(restTemplate.postForObject(eq("/check"), anyList(), eq(Void.class)))
+            .thenThrow(spyException);
+    var exception = assertThrows(RuntimeException.class, () -> stockServiceClient.verifyProductStocks(items));
+    assertTrue(exception.getMessage().startsWith("Stock Verify failed with message"));
   }
 }

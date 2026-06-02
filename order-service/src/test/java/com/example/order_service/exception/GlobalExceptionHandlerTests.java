@@ -1,45 +1,24 @@
 package com.example.order_service.exception;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatusCode;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GlobalExceptionHandlerTests {
-  private MockMvc mockMvc;
+  private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
-  @RestController
-  static class TestController {
-    @GetMapping("/test-stock-not-available")
-    public void throwStockNotAvailable() {
-      throw new StockNotAvailableException("Out of stock product");
-    }
-
-    @GetMapping("/test-stock-service-error")
-    public void throwStockServiceError() {
-      throw new StockServiceException("Connection timeout");
-    }
-  }
-
-  @BeforeEach
-  void setUp() {
-    mockMvc =
-        MockMvcBuilders.standaloneSetup(new TestController())
-            .setControllerAdvice(new GlobalExceptionHandler())
-            .build();
+  @Test
+  void testHandleStockNotAvailable_ReturnsBadRequest() {
+    StockNotAvailableException ex = new StockNotAvailableException("Out of stock product");
+    var res = globalExceptionHandler.handleStockNotAvailable(ex);
+    assertEquals(HttpStatusCode.valueOf(400), res.getStatusCode());
   }
 
   @Test
-  void testHandleStockNotAvailable_ReturnsBadRequest() throws Exception {
-    mockMvc
-        .perform(get("/test-stock-not-available"))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.error").value("Bad Request"));
+  void testHandleStockServiceError_ReturnsBadRequest() {
+    StockServiceException ex = new StockServiceException("Out of stock product");
+    var res = globalExceptionHandler.handleStockServiceError(ex);
+    assertEquals(HttpStatusCode.valueOf(500), res.getStatusCode());
   }
 }

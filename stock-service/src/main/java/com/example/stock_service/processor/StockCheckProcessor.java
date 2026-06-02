@@ -29,7 +29,7 @@ public class StockCheckProcessor implements Processor {
     @SuppressWarnings("unchecked")
     List<StockDto> requestStock = exchange.getProperty("requestStock", List.class);
     boolean isOutOfStock =
-        requestStock.parallelStream()
+        requestStock.parallelStream() // should limit number of thread in used
             .anyMatch(
                 item -> {
                   Integer dbQuantity = dbStockMap.get(item.getId());

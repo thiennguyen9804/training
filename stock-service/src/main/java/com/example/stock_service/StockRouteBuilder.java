@@ -22,13 +22,8 @@ public class StockRouteBuilder extends RouteBuilder {
     from("direct:printLogger")
             .process(exchange -> {
                 String loggerClass = org.slf4j.LoggerFactory.getLogger("CamelLogger").getClass().getName();
-
-                // In ra console của ứng dụng
                 System.out.println(">>> Logger implementation đang dùng: " + loggerClass);
-
-                // Trả về tên class logger làm phản hồi HTTP cho API
                 exchange.getIn().setBody("Logger implementation: " + loggerClass);
-
             });
 
     from("direct:checkStocks")
