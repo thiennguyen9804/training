@@ -1,6 +1,8 @@
 package com.example.stock_service.processor;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import com.example.stock_service.dto.StockDto;
 import com.example.stock_service.exception.StockNotAvailableException;
@@ -31,7 +33,7 @@ public class StockCheckProcessorTests {
   }
 
   @Test
-  public void testProcess_WhenStockIsEnough_ShouldReturn200AndAvailableTrue() throws Exception {
+  public void testProcess_WhenStockIsEnough_ShouldReturn200() throws Exception {
     exchange.setProperty("requestStock", List.of(new StockDto(1L, 1)));
 
     processor.process(exchange);
@@ -41,16 +43,24 @@ public class StockCheckProcessorTests {
   }
 
   @Test
-  public void testProcess_WhenStockIsNotEnough_ShouldReturn400AndThrowStockNotAvailableException() throws Exception {
+  public void testProcess_WhenStockIsNotEnough_ShouldThrowStockNotAvailableException() throws Exception {
     exchange.setProperty("requestStock", List.of(new StockDto(1L, 10000)));
+    var exception = assertThrowsExactly(
+            StockNotAvailableException.class,
+            () -> processor.process(exchange)
+    );
+    Integer statusCode = exchange.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
+    assertEquals("Out of Stock", exception.getMessage());
+  }
+
+  @Test
+  public void testProcess_WhenStockIsNotExisted_ShouldSetQuantityToZeroAndThrowNotAvailableException() throws Exception {
+    exchange.setProperty("requestStock", List.of(new StockDto(1L, 1), new StockDto(3L, 10000)));
 
     var exception = assertThrowsExactly(
             StockNotAvailableException.class,
             () -> processor.process(exchange)
     );
-
     assertEquals("Out of Stock", exception.getMessage());
-
-
   }
 }

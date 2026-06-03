@@ -35,10 +35,9 @@ public class StockServiceClientTests {
   private final List<OrderRequest.ItemDto> items = List.of(item);
 
   @Test
-  public void verifyProductStock_WhenStockIsAvailable_ShouldPassSuccessfully() {
-    var items = List.of(new OrderRequest.ItemDto(1L, 5));
+  public void verifyProductStockApi_IsCalledSuccessfully() {
+    var items = List.of(new OrderRequest.ItemDto(101L, 1));
     assertDoesNotThrow(() -> stockServiceClient.verifyProductStocks(items));
-
     String mockUrl = "/check";
     verify(restTemplate, times(1)).postForObject(eq(mockUrl), any(), eq(Void.class));
   }
@@ -60,6 +59,7 @@ public class StockServiceClientTests {
                 StandardCharsets.UTF_8);
     var spyException = spy(badRequestException);
     doReturn(mockErrorBody).when(spyException).getResponseBodyAs(StockErrorResponse.class);
+    when(spyException.getResponseBodyAs(StockErrorResponse.class)).thenReturn(mockErrorBody);
     when(restTemplate.postForObject(eq("/check"), anyList(), eq(Void.class)))
         .thenThrow(spyException);
     assertThrows(
@@ -83,6 +83,7 @@ public class StockServiceClientTests {
                 StandardCharsets.UTF_8);
     var spyException = spy(badRequestException);
     doReturn(mockErrorBody).when(spyException).getResponseBodyAs(StockErrorResponse.class);
+
     when(restTemplate.postForObject(eq("/check"), anyList(), eq(Void.class)))
         .thenThrow(spyException);
     assertThrows(InvalidStockException.class, () -> stockServiceClient.verifyProductStocks(items));
@@ -90,42 +91,44 @@ public class StockServiceClientTests {
 
   @Test
   public void
-  verifyProductStock_WhenStockServiceReturnErrorWithHttpServerErrorException_ShouldThrowStockServiceException()
+      verifyProductStock_WhenStockServiceReturnErrorWithHttpServerErrorException_ShouldThrowStockServiceException()
           throws JsonProcessingException {
     StockErrorResponse mockErrorBody = new StockErrorResponse("", "", "");
     String jsonError = objectMapper.writeValueAsString(mockErrorBody);
 
     HttpServerErrorException httpClientErrorException =
-            HttpServerErrorException.create(
-                            HttpStatus.INTERNAL_SERVER_ERROR,
-                            "Internal Server Error",
-                            new HttpHeaders(),
-                            jsonError.getBytes(StandardCharsets.UTF_8),
-                            StandardCharsets.UTF_8);
+        HttpServerErrorException.create(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Internal Server Error",
+            new HttpHeaders(),
+            jsonError.getBytes(StandardCharsets.UTF_8),
+            StandardCharsets.UTF_8);
     when(restTemplate.postForObject(eq("/check"), anyList(), eq(Void.class)))
-            .thenThrow(httpClientErrorException);
+        .thenThrow(httpClientErrorException);
     assertThrows(StockServiceException.class, () -> stockServiceClient.verifyProductStocks(items));
   }
 
   @Test
   public void
-  verifyProductStock_WhenStockServiceReturnErrorWithUnknownTypeException_ShouldThrowRuntimeException()
+      verifyProductStock_WhenStockServiceReturnErrorWithUnknownTypeException_ShouldThrowRuntimeException()
           throws JsonProcessingException {
-    StockErrorResponse mockErrorBody = new StockErrorResponse("Thien is too freaking handsome Exception", "", "");
+    StockErrorResponse mockErrorBody =
+        new StockErrorResponse("Thien is too freaking handsome Exception", "", "");
     String jsonError = objectMapper.writeValueAsString(mockErrorBody);
     HttpClientErrorException.BadRequest badRequestException =
-            (HttpClientErrorException.BadRequest)
-                    HttpClientErrorException.create(
-                            HttpStatus.BAD_REQUEST,
-                            "Bad Request",
-                            new HttpHeaders(),
-                            jsonError.getBytes(StandardCharsets.UTF_8),
-                            StandardCharsets.UTF_8);
+        (HttpClientErrorException.BadRequest)
+            HttpClientErrorException.create(
+                HttpStatus.BAD_REQUEST,
+                "Bad Request",
+                new HttpHeaders(),
+                jsonError.getBytes(StandardCharsets.UTF_8),
+                StandardCharsets.UTF_8);
     var spyException = spy(badRequestException);
     doReturn(mockErrorBody).when(spyException).getResponseBodyAs(StockErrorResponse.class);
     when(restTemplate.postForObject(eq("/check"), anyList(), eq(Void.class)))
-            .thenThrow(spyException);
-    var exception = assertThrows(RuntimeException.class, () -> stockServiceClient.verifyProductStocks(items));
+        .thenThrow(spyException);
+    var exception =
+        assertThrows(RuntimeException.class, () -> stockServiceClient.verifyProductStocks(items));
     assertTrue(exception.getMessage().startsWith("Stock Verify failed with message"));
   }
 }

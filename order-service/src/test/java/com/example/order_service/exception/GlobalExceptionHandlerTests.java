@@ -1,9 +1,9 @@
 package com.example.order_service.exception;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatusCode;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GlobalExceptionHandlerTests {
   private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
@@ -16,7 +16,7 @@ public class GlobalExceptionHandlerTests {
   }
 
   @Test
-  void testHandleStockServiceError_ReturnsBadRequest() {
+  void testHandleStockServiceError_ReturnsInternalServiceError() {
     StockServiceException ex = new StockServiceException("Out of stock product");
     var res = globalExceptionHandler.handleStockServiceError(ex);
     assertEquals(HttpStatusCode.valueOf(500), res.getStatusCode());

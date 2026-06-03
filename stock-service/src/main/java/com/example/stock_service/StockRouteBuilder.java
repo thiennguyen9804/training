@@ -19,13 +19,6 @@ public class StockRouteBuilder extends RouteBuilder {
             .to("direct:checkStocks")
             .get("/check-logger")
             .to("direct:printLogger");
-    from("direct:printLogger")
-            .process(exchange -> {
-                String loggerClass = org.slf4j.LoggerFactory.getLogger("CamelLogger").getClass().getName();
-                System.out.println(">>> Logger implementation đang dùng: " + loggerClass);
-                exchange.getIn().setBody("Logger implementation: " + loggerClass);
-            });
-
     from("direct:checkStocks")
             .log("Body type before marshaling: ${body.class}, Body: ${body}")
             .marshal().json()

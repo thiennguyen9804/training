@@ -27,7 +27,7 @@ public class OrderDbManagerTests {
     OrderRequest.ItemDto item2 = new OrderRequest.ItemDto(102L, 5);
     OrderRequest request = new OrderRequest(1L, List.of(item1, item2));
     Order mockSavedOrder = new Order();
-    mockSavedOrder.setId(999L); // Giả lập DB tự tăng ID sau khi lưu thành công
+    mockSavedOrder.setId(999L);
     when(repository.save(any(Order.class))).thenReturn(mockSavedOrder);
     Order result = manager.saveOrderTx(request);
     assertNotNull(result);

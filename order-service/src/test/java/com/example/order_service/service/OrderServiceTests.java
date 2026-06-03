@@ -37,8 +37,8 @@ public class OrderServiceTests {
   public void createOrder_WhenAllItemsAvailable_ShouldSaveOrderSuccessfully() {
     doReturn(order).when(manager).saveOrderTx(sampleRequest);
     Order savedOrder = orderService.createOrder(sampleRequest);
-    verify(stockServiceClient, times(1)).verifyProductStocks(sampleRequest.items());
-    verify(manager, times(1)).saveOrderTx(sampleRequest);
+    verify(stockServiceClient).verifyProductStocks(sampleRequest.items());
+    verify(manager).saveOrderTx(sampleRequest);
     assertEquals(1L, savedOrder.getId());
   }
 }

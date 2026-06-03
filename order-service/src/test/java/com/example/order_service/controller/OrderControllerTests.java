@@ -46,16 +46,15 @@ public class OrderControllerTests {
 
     when(orderService.createOrder(any(OrderRequest.class))).thenReturn(mockSavedOrder);
 
-      ResultActions resultActions = mockMvc
-          .perform(
-              post("/v1/order")
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content(objectMapper.writeValueAsString(sampleRequest)));
-      resultActions.andExpect(status().isOk());
-      resultActions.andExpect(content().string(containsString("Your order is created successfully with id:")));
-//        .andExpect(status().isOk())
-//        .andExpect(content().string(containsString("Your order is created successfully with id:")));
+    ResultActions resultActions =
+        mockMvc.perform(
+            post("/v1/order")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(sampleRequest)));
+    resultActions.andExpect(status().isOk());
+    resultActions.andExpect(
+        content().string(containsString("Your order is created successfully with id:")));
 
-    verify(orderService, times(1)).createOrder(any(OrderRequest.class));
+    verify(orderService).createOrder(any(OrderRequest.class));
   }
 }

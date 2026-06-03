@@ -1,6 +1,7 @@
 package com.example.stock_service.processor;
 
 import com.example.stock_service.dto.StockErrorResponse;
+import com.example.stock_service.exception.InvalidStockException;
 import com.example.stock_service.exception.StockNotAvailableException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -24,7 +25,6 @@ public class ExceptionProcessorTests {
 
     @Test
     void testProcess_WhenStockNotAvailableException_ShouldReturnCorrectErrorResponse() throws Exception {
-        String errorMessage = "Sản phẩm không đủ số lượng trong kho";
         StockNotAvailableException exception = new StockNotAvailableException("");
         exchange.setProperty(Exchange.EXCEPTION_CAUGHT, exception);
         exceptionProcessor.process(exchange);
@@ -32,6 +32,30 @@ public class ExceptionProcessorTests {
         StockErrorResponse body = message.getBody(StockErrorResponse.class);
         assertNotNull(body);
         assertEquals("StockNotAvailableException", body.type());
+        assertEquals("Bad Request", body.error());
+    }
+
+    @Test
+    void testProcess_WhenInvalidStockAvailableException_ShouldReturnCorrectErrorResponse() throws Exception {
+        InvalidStockException exception = new InvalidStockException("");
+        exchange.setProperty(Exchange.EXCEPTION_CAUGHT, exception);
+        exceptionProcessor.process(exchange);
+        Message message = exchange.getIn();
+        StockErrorResponse body = message.getBody(StockErrorResponse.class);
+        assertNotNull(body);
+        assertEquals("InvalidStockException", body.type());
+        assertEquals("Bad Request", body.error());
+    }
+
+    @Test
+    void testProcess_WhenUnknownTypeException_ShouldReturnCorrectErrorResponse() throws Exception {
+        RuntimeException exception = new RuntimeException("");
+        exchange.setProperty(Exchange.EXCEPTION_CAUGHT, exception);
+        exceptionProcessor.process(exchange);
+        Message message = exchange.getIn();
+        StockErrorResponse body = message.getBody(StockErrorResponse.class);
+        assertNotNull(body);
+        assertEquals("StockUnknownException", body.type());
         assertEquals("Bad Request", body.error());
     }
 }
