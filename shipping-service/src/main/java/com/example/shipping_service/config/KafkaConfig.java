@@ -2,6 +2,8 @@ package com.example.shipping_service.config;
 
 import com.example.shipping_service.service.ShippingService;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.DirectChannel;
@@ -9,21 +11,20 @@ import org.springframework.integration.channel.ExecutorChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.ThreadPoolExecutor;
-
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConfig {
   private final ShippingService service;
+  private final Logger logger = LogManager.getLogger(getClass());
 
   @Bean
   public ThreadPoolTaskExecutor pipelineExecutor() {
-      ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-      executor.setCorePoolSize(5);       // Số lượng thread chạy thường trực
-      executor.setMaxPoolSize(10);       // Số lượng thread tối đa khi quá tải
-      executor.setQueueCapacity(20);     // Hàng đợi chứa task chờ xử lý
-      executor.initialize();
-      return executor;
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(5); // Số lượng thread chạy thường trực
+    executor.setMaxPoolSize(10); // Số lượng thread tối đa khi quá tải
+    executor.setQueueCapacity(20); // Hàng đợi chứa task chờ xử lý
+    executor.initialize();
+    return executor;
   }
 
   @Bean
@@ -38,7 +39,7 @@ public class KafkaConfig {
 
   @Bean
   public IntegrationFlow wireTapFlow() {
-    return IntegrationFlow.from(primaryChannel())
+    return IntegrationFlow.from(primaryChannel(pipelineExecutor()))
         .wireTap(wireTapChannel())
         .handle(service, "saveShipping")
         .get();
@@ -49,8 +50,7 @@ public class KafkaConfig {
     return IntegrationFlow.from(wireTapChannel)
         .handle(
             message -> {
-              // Nơi bạn xử lý bản sao tin nhắn (ví dụ: in log)
-              System.out.println("WireTap nhận được bản sao tin nhắn: " + message.getPayload());
+              logger.info("WireTap received: {}", message.getPayload());
             })
         .get();
   }
