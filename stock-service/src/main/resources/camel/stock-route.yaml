@@ -1,0 +1,28 @@
+- route:
+    routeConfigurationId: "GlobalExceptionHandler"
+    from:
+      uri: "direct:checkStocks"
+      steps:
+        - log: "Body type before marshaling: ${body.class}, Body: ${body}"
+        - marshal:
+            json: {}
+        - choice:
+            when:
+              - jsonpath: "$[?(@.quantity < 0)]"
+                steps:
+                  - throwException:
+                      exception-type: "com.example.stock_service.exception.InvalidStockException"
+                      message: "Quantity cannot be negative!!!"
+        - log: "Body type before unmarshaling: ${body.class}, Body: ${body}"
+        - unmarshal:
+            json:
+              unmarshalType: "com.example.stock_service.dto.StockDto[]"
+        - setProperty:
+            name: "requestStock"
+            simple: "${body}"
+        - process:
+            ref: "mapperProcessor"
+        - to:
+            uri: "sql:SELECT * FROM stocks WHERE id IN (:#in:${body})?outputClass=com.example.stock_service.dto.StockDto"
+        - process:
+            ref: "stockCheckProcessor"

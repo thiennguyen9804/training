@@ -4,9 +4,9 @@ import com.example.order_service.dto.OrderRequest;
 import com.example.order_service.entity.Order;
 import com.example.order_service.entity.OrderItem;
 import com.example.order_service.repository.OrderRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor

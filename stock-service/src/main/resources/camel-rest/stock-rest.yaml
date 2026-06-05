@@ -1,0 +1,6 @@
+- rest:
+    path: "/v1/stocks"
+    post:
+      - uri: "/check"
+        type: "com.example.dto.StockDto[]"
+        to: "direct:checkStocks"

@@ -1,0 +1,15 @@
+- restConfiguration:
+    bindingMode: "json"
+
+- routeConfiguration:
+    id: "GlobalExceptionHandler"
+    onException:
+      - onException:
+          exception:
+            - "com.example.stock_service.exception.InvalidStockException"
+            - "com.example.stock_service.exception.StockNotAvailableException"
+          handled:
+            constant: true
+          steps:
+            - process:
+                ref: "exceptionProcessor"

@@ -34,6 +34,7 @@ public class StockServiceClientTests {
   OrderRequest.ItemDto item = new OrderRequest.ItemDto(101L, 2);
   private final List<OrderRequest.ItemDto> items = List.of(item);
 
+
   @Test
   public void verifyProductStockApi_IsCalledSuccessfully() {
     var items = List.of(new OrderRequest.ItemDto(101L, 1));
@@ -57,6 +58,7 @@ public class StockServiceClientTests {
                 new HttpHeaders(),
                 jsonError.getBytes(StandardCharsets.UTF_8),
                 StandardCharsets.UTF_8);
+
     var spyException = spy(badRequestException);
     doReturn(mockErrorBody).when(spyException).getResponseBodyAs(StockErrorResponse.class);
     when(spyException.getResponseBodyAs(StockErrorResponse.class)).thenReturn(mockErrorBody);

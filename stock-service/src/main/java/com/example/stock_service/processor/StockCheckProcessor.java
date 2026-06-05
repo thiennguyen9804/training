@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 @Component("stockCheckProcessor")
@@ -19,12 +17,7 @@ public class StockCheckProcessor implements Processor {
     List<StockDto> rows = exchange.getIn().getBody(List.class);
 
     Map<Long, Integer> dbStockMap =
-        rows.stream()
-            .collect(
-                Collectors.toMap(
-                    StockDto::getId,
-                    StockDto::getQuantity
-                    ));
+        rows.stream().collect(Collectors.toMap(StockDto::getId, StockDto::getQuantity));
 
     @SuppressWarnings("unchecked")
     List<StockDto> requestStock = exchange.getProperty("requestStock", List.class);

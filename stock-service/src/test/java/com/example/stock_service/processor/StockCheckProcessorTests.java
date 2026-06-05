@@ -1,18 +1,16 @@
 package com.example.stock_service.processor;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import com.example.stock_service.dto.StockDto;
 import com.example.stock_service.exception.StockNotAvailableException;
+import java.util.List;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultExchange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.List;
 
 public class StockCheckProcessorTests {
 
@@ -29,7 +27,6 @@ public class StockCheckProcessorTests {
     StockDto mockDbDto2 = new StockDto(2L, 9999);
     var list = List.of(mockDbDto1, mockDbDto2);
     exchange.getIn().setBody(list);
-
   }
 
   @Test
@@ -43,24 +40,23 @@ public class StockCheckProcessorTests {
   }
 
   @Test
-  public void testProcess_WhenStockIsNotEnough_ShouldThrowStockNotAvailableException() throws Exception {
+  public void testProcess_WhenStockIsNotEnough_ShouldThrowStockNotAvailableException()
+      throws Exception {
     exchange.setProperty("requestStock", List.of(new StockDto(1L, 10000)));
-    var exception = assertThrowsExactly(
-            StockNotAvailableException.class,
-            () -> processor.process(exchange)
-    );
+    var exception =
+        assertThrowsExactly(StockNotAvailableException.class, () -> processor.process(exchange));
     Integer statusCode = exchange.getIn().getHeader(Exchange.HTTP_RESPONSE_CODE, Integer.class);
     assertEquals("Out of Stock", exception.getMessage());
   }
 
   @Test
-  public void testProcess_WhenStockIsNotExisted_ShouldSetQuantityToZeroAndThrowNotAvailableException() throws Exception {
+  public void
+      testProcess_WhenStockIsNotExisted_ShouldSetQuantityToZeroAndThrowNotAvailableException()
+          throws Exception {
     exchange.setProperty("requestStock", List.of(new StockDto(1L, 1), new StockDto(3L, 10000)));
 
-    var exception = assertThrowsExactly(
-            StockNotAvailableException.class,
-            () -> processor.process(exchange)
-    );
+    var exception =
+        assertThrowsExactly(StockNotAvailableException.class, () -> processor.process(exchange));
     assertEquals("Out of Stock", exception.getMessage());
   }
 }

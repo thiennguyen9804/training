@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 @WebMvcTest(OrderController.class)
 public class OrderControllerTests {
-
   @Autowired private MockMvc mockMvc;
 
   @MockitoBean private OrderService orderService;
