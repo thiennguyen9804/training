@@ -13,7 +13,7 @@ public class ShipmentEventListener {
   private final ShipmentIntegrationGateway gateway;
 
   @KafkaListener(topics = "shipping-topic", groupId = "order-service-group")
-  public void printShippingInfo(@Payload ShipmentEvent event) {
+  public void printShippingInfo(ShipmentEvent event) {
     gateway.sendToPipeline(event);
   }
 }

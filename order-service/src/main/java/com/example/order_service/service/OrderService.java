@@ -7,8 +7,6 @@ import com.example.order_service.dto.ShipmentEvent;
 import com.example.order_service.entity.Order;
 import com.example.order_service.manager.OrderDbManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -15,14 +15,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @RequiredArgsConstructor
 public class KafkaConfig {
   private final ShippingService service;
-  private final Logger logger = LogManager.getLogger(getClass());
+  private final Logger logger = LogManager.getLogger();
 
   @Bean
   public ThreadPoolTaskExecutor pipelineExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(5); // Số lượng thread chạy thường trực
-    executor.setMaxPoolSize(10); // Số lượng thread tối đa khi quá tải
-    executor.setQueueCapacity(20); // Hàng đợi chứa task chờ xử lý
+    executor.setCorePoolSize(5);
+    executor.setMaxPoolSize(10);
+    executor.setQueueCapacity(20);
     executor.initialize();
     return executor;
   }
@@ -49,9 +49,7 @@ public class KafkaConfig {
   public IntegrationFlow loggingWireTapFlow(DirectChannel wireTapChannel) {
     return IntegrationFlow.from(wireTapChannel)
         .handle(
-            message -> {
-              logger.info("WireTap received: {}", message.getPayload());
-            })
+            message -> logger.info("WireTap received: {}", message.getPayload()))
         .get();
   }
 }

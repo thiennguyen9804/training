@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ShippingServiceClient {
-    private final KafkaTemplate<String, ShipmentEvent> kafkaTemplate;
-    @Async
-    public void send(ShipmentEvent event) {
-        kafkaTemplate.send("shipping-topic", event);
-    }
+  private final KafkaTemplate<String, ShipmentEvent> kafkaTemplate;
+
+  @Async
+  public void send(ShipmentEvent event) {
+    kafkaTemplate.send("shipping-topic", event);
+  }
 }
