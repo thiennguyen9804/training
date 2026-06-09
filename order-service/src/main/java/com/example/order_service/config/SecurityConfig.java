@@ -16,7 +16,10 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter filter)
       throws Exception {
-    return http.csrf(AbstractHttpConfigurer::disable)
+    return http
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
             auth -> {
               auth.anyRequest().authenticated();

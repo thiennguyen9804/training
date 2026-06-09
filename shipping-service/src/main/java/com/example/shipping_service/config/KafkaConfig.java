@@ -38,7 +38,7 @@ public class KafkaConfig {
   }
 
   @Bean
-  public IntegrationFlow wireTapFlow() {
+  public IntegrationFlow primaryFlow() {
     return IntegrationFlow.from(primaryChannel(pipelineExecutor()))
         .wireTap(wireTapChannel())
         .handle(service, "saveShipping")
@@ -46,7 +46,7 @@ public class KafkaConfig {
   }
 
   @Bean
-  public IntegrationFlow loggingWireTapFlow(DirectChannel wireTapChannel) {
+  public IntegrationFlow wireTapFlow(DirectChannel wireTapChannel) {
     return IntegrationFlow.from(wireTapChannel)
         .handle(
             message -> logger.info("WireTap received: {}", message.getPayload()))

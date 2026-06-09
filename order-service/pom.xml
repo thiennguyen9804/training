@@ -157,6 +157,7 @@
 								<exclude>com/example/order_service/exception/*Exception.class</exclude>
 								<exclude>com/example/order_service/*_learn/**/*.class</exclude>
 								<exclude>com/example/order_service/entity/*.class</exclude>
+								<exclude>com/example/order_service/controller/HelloController.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -171,6 +172,7 @@
 								<exclude>com/example/order_service/exception/*Exception.class</exclude>
 								<exclude>com/example/order_service/*_learn/**/*.class</exclude>
 								<exclude>com/example/order_service/entity/*.class</exclude>
+								<exclude>com/example/order_service/controller/HelloController.class</exclude>
 							</excludes>
 							<rules>
 								<rule>

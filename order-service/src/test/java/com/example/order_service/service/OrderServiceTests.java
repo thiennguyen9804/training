@@ -3,6 +3,7 @@ package com.example.order_service.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.example.order_service.client.ShippingServiceClient;
 import com.example.order_service.client.StockServiceClient;
 import com.example.order_service.dto.OrderRequest;
 import com.example.order_service.entity.Order;
@@ -17,10 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTests {
-
   @Mock private StockServiceClient stockServiceClient;
   @Mock private OrderDbManager manager;
   @InjectMocks private OrderService orderService;
+  @Mock private ShippingServiceClient shippingServiceClient;
   private OrderRequest sampleRequest;
   private Order order;
 
@@ -29,6 +30,7 @@ public class OrderServiceTests {
     OrderRequest.ItemDto item1 = new OrderRequest.ItemDto(101L, 2);
     OrderRequest.ItemDto item2 = new OrderRequest.ItemDto(102L, 1);
     sampleRequest = new OrderRequest(1L, List.of(item1, item2));
+    doNothing().when(shippingServiceClient).send(any());
     order = new Order();
     order.setId(1L);
   }
