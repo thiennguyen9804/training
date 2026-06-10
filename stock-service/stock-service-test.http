@@ -1,0 +1,40 @@
+### Kiểm tra tồn kho thành công (Danh sách sản phẩm hợp lệ)
+POST http://localhost:8080/api/v1/stocks/check
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "quantity": 5
+  },
+  {
+    "id": 2,
+    "quantity": 2
+  }
+]
+
+### -----------------------------------------------------------------
+
+### Kiểm tra tồn kho thất bại - Case sản phẩm không tồn tại (InvalidStockException)
+POST http://localhost:8080/api/v1/stocks/check
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "quantity": -1
+  }
+]
+
+### -----------------------------------------------------------------
+
+### Kiểm tra tồn kho thất bại - Case vượt quá số lượng trong kho (StockNotAvailableException)
+POST http://localhost:8080/api/v1/stocks/check
+Content-Type: application/json
+
+[
+  {
+    "id": 101,
+    "quantity": 999999
+  }
+]

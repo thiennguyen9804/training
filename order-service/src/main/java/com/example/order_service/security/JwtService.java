@@ -5,13 +5,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtService {
-  @Value("${SECRET_KEY}")
+  @Value("${security.secret_key}")
   private String SECRET_KEY;
 
   private SecretKey getSigningKey() {

@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 public class JwtService {
-  @Value("${SECRET_KEY}")
+  @Value("${spring.jwt.secret_key}")
   private String SECRET_KEY;
 
   private SecretKey getSigningKey() {
@@ -21,7 +21,7 @@ public class JwtService {
   public String generateToken(Integer userId, String username) {
     return Jwts.builder()
             .subject(username)
-            .claim("userId", userId) // Lưu userId vào custom claim
+            .claim("userId", userId)
             .signWith(getSigningKey())
             .compact();
   }

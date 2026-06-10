@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.example.order_service.dto.OrderRequest;
-import com.example.order_service.entity.Order;
+import com.example.order_service.model.dto.OrderRequest;
+import com.example.order_service.model.entity.Order;
 import com.example.order_service.repository.OrderRepository;
 import java.util.List;
 import org.junit.jupiter.api.Test;

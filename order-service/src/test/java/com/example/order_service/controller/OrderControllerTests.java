@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.order_service.dto.OrderRequest;
-import com.example.order_service.entity.Order;
+import com.example.order_service.model.dto.OrderRequest;
+import com.example.order_service.model.entity.Order;
 import com.example.order_service.security.JwtService;
 import com.example.order_service.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;

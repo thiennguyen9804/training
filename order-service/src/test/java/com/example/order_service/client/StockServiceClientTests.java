@@ -3,11 +3,11 @@ package com.example.order_service.client;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.example.order_service.dto.OrderRequest;
-import com.example.order_service.dto.StockErrorResponse;
-import com.example.order_service.exception.InvalidStockException;
-import com.example.order_service.exception.StockNotAvailableException;
-import com.example.order_service.exception.StockServiceException;
+import com.example.order_service.model.dto.OrderRequest;
+import com.example.order_service.model.dto.StockErrorResponse;
+import com.example.order_service.model.exception.InvalidStockException;
+import com.example.order_service.model.exception.StockNotAvailableException;
+import com.example.order_service.model.exception.StockServiceException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;

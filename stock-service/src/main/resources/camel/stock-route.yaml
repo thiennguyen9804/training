@@ -26,3 +26,4 @@
             uri: "sql:SELECT * FROM stocks WHERE id IN (:#in:${body})?outputClass=com.example.stock_service.dto.StockDto"
         - process:
             ref: "stockCheckProcessor"
+

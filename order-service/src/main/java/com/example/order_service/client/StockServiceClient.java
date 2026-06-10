@@ -1,10 +1,10 @@
 package com.example.order_service.client;
 
-import com.example.order_service.dto.OrderRequest;
-import com.example.order_service.dto.StockErrorResponse;
-import com.example.order_service.exception.InvalidStockException;
-import com.example.order_service.exception.StockNotAvailableException;
-import com.example.order_service.exception.StockServiceException;
+import com.example.order_service.model.dto.OrderRequest;
+import com.example.order_service.model.dto.StockErrorResponse;
+import com.example.order_service.model.exception.InvalidStockException;
+import com.example.order_service.model.exception.StockNotAvailableException;
+import com.example.order_service.model.exception.StockServiceException;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.order_service.exception;
+package com.example.order_service.model.exception;
 
 public class StockNotAvailableException extends RuntimeException {
   public StockNotAvailableException(String message) {

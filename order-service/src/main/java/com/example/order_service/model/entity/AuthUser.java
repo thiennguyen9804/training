@@ -1,4 +1,4 @@
-package com.example.order_service.entity;
+package com.example.order_service.model.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

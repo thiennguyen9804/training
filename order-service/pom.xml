@@ -99,6 +99,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j2</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -153,11 +157,9 @@
 						</goals>
 						<configuration>
 							<excludes>
-								<exclude>com/example/order_service/dto/*.class</exclude>
-								<exclude>com/example/order_service/exception/*Exception.class</exclude>
-								<exclude>com/example/order_service/*_learn/**/*.class</exclude>
-								<exclude>com/example/order_service/entity/*.class</exclude>
-								<exclude>com/example/order_service/controller/HelloController.class</exclude>
+								<exclude>com/example/order_service/**/dto/*.class</exclude>
+								<exclude>com/example/order_service/**/exception/*Exception.class</exclude>
+								<exclude>com/example/order_service/**/entity/*.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -168,11 +170,9 @@
 						</goals>
 						<configuration>
 							<excludes>
-								<exclude>com/example/order_service/dto/*.class</exclude>
-								<exclude>com/example/order_service/exception/*Exception.class</exclude>
-								<exclude>com/example/order_service/*_learn/**/*.class</exclude>
-								<exclude>com/example/order_service/entity/*.class</exclude>
-								<exclude>com/example/order_service/controller/HelloController.class</exclude>
+								<exclude>com/example/order_service/**/dto/*.class</exclude>
+								<exclude>com/example/order_service/**/exception/*Exception.class</exclude>
+								<exclude>com/example/order_service/**/entity/*.class</exclude>
 							</excludes>
 							<rules>
 								<rule>

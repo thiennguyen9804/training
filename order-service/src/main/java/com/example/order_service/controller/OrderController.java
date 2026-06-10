@@ -1,7 +1,7 @@
 package com.example.order_service.controller;
 
-import com.example.order_service.dto.OrderRequest;
-import com.example.order_service.entity.Order;
+import com.example.order_service.model.dto.OrderRequest;
+import com.example.order_service.model.entity.Order;
 import com.example.order_service.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.example.order_service.dto;
+package com.example.order_service.model.dto;
 
 public record StockErrorResponse(String type, String error, String message) {}
 

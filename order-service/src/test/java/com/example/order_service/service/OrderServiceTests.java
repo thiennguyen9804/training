@@ -5,9 +5,9 @@ import static org.mockito.Mockito.*;
 
 import com.example.order_service.client.ShippingServiceClient;
 import com.example.order_service.client.StockServiceClient;
-import com.example.order_service.dto.OrderRequest;
-import com.example.order_service.entity.Order;
 import com.example.order_service.manager.OrderDbManager;
+import com.example.order_service.model.dto.OrderRequest;
+import com.example.order_service.model.entity.Order;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
