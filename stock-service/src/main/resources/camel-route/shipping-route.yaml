@@ -21,14 +21,14 @@
             name: "id"
             simple: "${body.id()}" # current data type of exchange body's: UpdateShippingDto
         - marshal: # convert UpdateShippingDto to JSON and store it in exchange body
-            json: {} # current data type of exchange body's: JSON of UpdateShippingDto
-        - convertBodyTo: "java.lang.String"
+            json: {} # current data type of exchange body's: JSON (InputStreamCache) of UpdateShippingDto
+        - convertBodyTo: "java.lang.String" # convert to JSON String to save to DB
         - setProperty:
             name: "payload"
-            simple: "${body}" # which means put said dto into payload property
+            simple: "${body}" # which means put said JSON into payload property
         - setHeader:
             name: "CamelSqlRetrieveGeneratedKeys"
-            constant: true
+            constant: true # help return generated id when insert
         - to:
             uri: "sql:INSERT INTO kafka_outboxes (topic, message_key, payload) VALUES ('update-shipping-topic', :#${exchangeProperty.id}, :#${exchangeProperty.payload})"
         - to:
