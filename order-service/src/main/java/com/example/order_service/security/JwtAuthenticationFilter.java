@@ -15,24 +15,25 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtService jwtService;
   private final HandlerExceptionResolver resolver;
 
   public JwtAuthenticationFilter(
-          JwtService jwtService,
-          @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+      JwtService jwtService,
+      @Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
     this.jwtService = jwtService;
     this.resolver = resolver;
   }
 
   @Override
   protected void doFilterInternal(
-          HttpServletRequest request,
-          @NonNull HttpServletResponse response,
-          @NonNull FilterChain filterChain)
-          throws ServletException, IOException {
+      HttpServletRequest request,
+      @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain)
+      throws ServletException, IOException {
 
     String authHeader = request.getHeader("Authorization");
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -51,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       AuthUser userPrincipal = new AuthUser();
       userPrincipal.setId(userId);
       UsernamePasswordAuthenticationToken authToken =
-              new UsernamePasswordAuthenticationToken(userPrincipal, null, new ArrayList<>());
+          new UsernamePasswordAuthenticationToken(userPrincipal, null, new ArrayList<>());
       SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 

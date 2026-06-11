@@ -1,0 +1,35 @@
+- route:
+    from:
+      uri: "cron:outboxScheduler"
+      parameters:
+        schedule: "*/5+*+*+*+*+*"
+      steps:
+        - to:
+            uri: "sql:SELECT id, payload FROM kafka_outboxes WHERE status='PENDING' AND topic='update-shipping-topic'"
+            parameters:
+              outputType: "SelectList"
+        - process:
+            ref: "updateShippingPayloadMapper"
+        - split:
+            simple: "${body}"
+            steps:
+              - setHeader:
+                  name: "CamelKafkaKey"
+                  simple: "${body.getPayload().getId()}"
+              - setProperty:
+                  name: "outboxId"
+                  simple: "${body.getId()}"
+              - setBody:
+                  simple: "${body.getPayload()}" # current data type of exchange body's: UpdateShippingDto
+              - wireTap:
+                  uri: "direct:messageWireTap"
+              - to:
+                  uri: "kafka:update-shipping-topic"
+                  parameters:
+                    brokers: "localhost:9092"
+                    keySerializer: "org.apache.kafka.common.serialization.LongSerializer"
+                    valueSerializer: "org.springframework.kafka.support.serializer.JsonSerializer"
+                    retryBackoffMs: 1000
+                    retries: 3
+              - to:
+                  uri: "sql:DELETE FROM kafka_outboxes WHERE id = :#${exchangeProperty.outboxId}"

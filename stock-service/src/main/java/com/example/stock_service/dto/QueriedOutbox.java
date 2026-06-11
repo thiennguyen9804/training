@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateShippingDto {
+public class QueriedOutbox {
   private Long id;
-  private String status;
+  private UpdateShippingDto payload;
 }

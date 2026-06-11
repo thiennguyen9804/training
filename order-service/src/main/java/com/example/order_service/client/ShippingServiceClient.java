@@ -8,9 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
-//@Component
+// @Component
 @RequiredArgsConstructor
 public class ShippingServiceClient {
   private final KafkaTemplate<String, ShipmentEvent> kafkaTemplate;

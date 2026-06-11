@@ -3,9 +3,7 @@ package com.example.order_service.service;
 import com.example.order_service.client.StockServiceClient;
 import com.example.order_service.manager.OrderDbManager;
 import com.example.order_service.model.dto.OrderRequest;
-import com.example.order_service.model.dto.ShipmentEvent;
 import com.example.order_service.model.entity.Order;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

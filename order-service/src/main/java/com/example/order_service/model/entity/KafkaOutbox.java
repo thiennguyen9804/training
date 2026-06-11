@@ -18,8 +18,7 @@ public class KafkaOutbox {
   @Column(name = "message_key")
   private String messageKey;
 
-  @Lob
-  @Column(nullable = false, columnDefinition = "JSON")
+  @Column(name = "payload")
   private String payload;
 
   @Column(nullable = false)

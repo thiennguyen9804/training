@@ -32,7 +32,7 @@ public class OrderDbManager {
     }
     var createdOrder = orderRepository.save(newOrder);
     var shipmentEvent =
-            new ShipmentEvent(createdOrder.getId(), createdOrder.getCustomerId(), "CREATED");
+        new ShipmentEvent(createdOrder.getId(), createdOrder.getCustomerId(), "CREATED");
     var outbox = new KafkaOutbox();
     try {
       outbox.setPayload(mapper.writeValueAsString(shipmentEvent));

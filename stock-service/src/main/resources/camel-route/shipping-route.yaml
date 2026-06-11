@@ -8,9 +8,8 @@
             steps:
               - setHeader:
                   name: "CamelKafkaKey"
-                  simple: "${body.id()}" # current data type of exchange body's: UpdateShippingDto
+                  simple: "${body.getId()}" # current data type of exchange body's: UpdateShippingDto
               - to: "direct:kafkaShipping"
-
 - route:
     from:
       uri: "direct:kafkaShipping"
@@ -19,13 +18,18 @@
             uri: "direct:messageWireTap"
         - setProperty:
             name: "id"
-            simple: "${body.id()}" # current data type of exchange body's: UpdateShippingDto
-        - marshal: # convert UpdateShippingDto to JSON and store it in exchange body
+            simple: "${body.getId()}" # current data type of exchange body's: UpdateShippingDto
+        - setProperty:
+            name: "oldBody"
+            simple: "${body}" # storing the current body
+        - marshal: # convert UpdateShippingDto to JSON and store it in body
             json: {} # current data type of exchange body's: JSON (InputStreamCache) of UpdateShippingDto
-        - convertBodyTo: "java.lang.String" # convert to JSON String to save to DB
+        - convertBodyTo: "java.lang.String" # convert body to JSON String to save to DB
         - setProperty:
             name: "payload"
             simple: "${body}" # which means put said JSON into payload property
+        - setBody:
+            simple: "${exchangeProperty.oldBody}" # retrieved archived body, which puts this data type in the body to UpdateShippingDto
         - setHeader:
             name: "CamelSqlRetrieveGeneratedKeys"
             constant: true # help return generated id when insert
@@ -46,4 +50,5 @@
     from:
       uri: "direct:messageWireTap"
       steps:
-        - log: "Message ${body} will be sent to Kafka Broker"
+        - log: "Message ${body}, whose data type is: ${body.getClass()}, will be sent to Kafka Broker"
+

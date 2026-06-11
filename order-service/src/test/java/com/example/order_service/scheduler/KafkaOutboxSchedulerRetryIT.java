@@ -10,7 +10,6 @@ import com.example.order_service.repository.KafkaOutboxRepository;
 import com.example.order_service.repository.OrderRepository;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -43,7 +42,7 @@ public class KafkaOutboxSchedulerRetryIT {
   @MockitoBean private KafkaOutboxRepository outboxRepository;
   @MockitoBean private OrderRepository orderRepository;
 
-//  @Test
+  //  @Test
   void whenKafkaFails_thenRetry3Times() throws Exception {
     CompletableFuture<SendResult<Long, ShipmentEvent>> future = new CompletableFuture<>();
     future.completeExceptionally(new RuntimeException("Kafka down"));

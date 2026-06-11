@@ -3,7 +3,6 @@ package com.example.shipping_service.mapper;
 import com.example.shipping_service.client.CustomerClientService;
 import com.example.shipping_service.entity.Shipping;
 import com.example.shipping_service.event.ShipmentEvent;
-import java.util.UUID;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
