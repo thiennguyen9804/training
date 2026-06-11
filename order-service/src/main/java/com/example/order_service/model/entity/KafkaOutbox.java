@@ -23,5 +23,5 @@ public class KafkaOutbox {
   private String payload;
 
   @Column(nullable = false)
-  private String status = "PENDING"; // PENDING, SENT, FAILED
+  private String status = "PENDING"; // PENDING, SUCCESS, FAILED
 }

@@ -33,7 +33,6 @@ public class KafkaOutboxScheduler {
         outbox -> {
           try {
             self.sendOutbox(outbox);
-            logger.info(self.getClass());
           } catch (ExecutionException | InterruptedException e) {
             logger.error("Failed to send outbox: {}", outbox.getId(), e);
           }
@@ -51,8 +50,13 @@ public class KafkaOutboxScheduler {
       throw new RuntimeException(e);
     }
     logger.info("Start sending event with outbox ID: {} to broker", outbox.getId());
-    kafkaTemplate.send("shipping-topic", outbox.getId(), event).get();
-    outbox.setStatus("SUCCESS");
-    outboxRepository.save(outbox);
+    kafkaTemplate.send("shipping-topic", outbox.getId(), event).whenComplete((res, ex) -> {
+      if(ex == null) {
+        outboxRepository.deleteById(outbox.getId());
+      } else {
+        logger.warn("Message with id: {} in outbox table failed to send with topic: shipping-topic", outbox.getId());
+      }
+    });
+
   }
 }

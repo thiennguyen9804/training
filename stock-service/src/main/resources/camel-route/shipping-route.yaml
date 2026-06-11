@@ -1,0 +1,49 @@
+- route:
+    routeConfigurationId: "GlobalExceptionHandler"
+    from:
+      uri: "direct:updateShipping"
+      steps:
+        - split:
+            simple: "${body}"
+            steps:
+              - setHeader:
+                  name: "CamelKafkaKey"
+                  simple: "${body.id()}" # current data type of exchange body's: UpdateShippingDto
+              - to: "direct:kafkaShipping"
+
+- route:
+    from:
+      uri: "direct:kafkaShipping"
+      steps:
+        - wireTap:
+            uri: "direct:messageWireTap"
+        - setProperty:
+            name: "id"
+            simple: "${body.id()}" # current data type of exchange body's: UpdateShippingDto
+        - marshal: # convert UpdateShippingDto to JSON and store it in exchange body
+            json: {} # current data type of exchange body's: JSON of UpdateShippingDto
+        - convertBodyTo: "java.lang.String"
+        - setProperty:
+            name: "payload"
+            simple: "${body}" # which means put said dto into payload property
+        - setHeader:
+            name: "CamelSqlRetrieveGeneratedKeys"
+            constant: true
+        - to:
+            uri: "sql:INSERT INTO kafka_outboxes (topic, message_key, payload) VALUES ('update-shipping-topic', :#${exchangeProperty.id}, :#${exchangeProperty.payload})"
+        - to:
+            uri: "kafka:update-shipping-topic"
+            parameters:
+              brokers: "localhost:9092"
+              keySerializer: "org.apache.kafka.common.serialization.LongSerializer"
+              valueSerializer: "org.springframework.kafka.support.serializer.JsonSerializer"
+              retryBackoffMs: 1000
+              retries: 3
+        - to:
+            uri: "sql:DELETE FROM kafka_outboxes WHERE id = :#${header.generatedOutboxId}"
+
+- route:
+    from:
+      uri: "direct:messageWireTap"
+      steps:
+        - log: "Message ${body} will be sent to Kafka Broker"

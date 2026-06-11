@@ -11,17 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class ShipmentEventToShippingMapper {
   @Autowired protected CustomerClientService service;
 
-  @BeforeMapping
-  protected void preEnrichShipping(ShipmentEvent event, @MappingTarget Shipping shipping) {
-    shipping.setOrderId(event.orderId());
-    shipping.setShippingStatus(event.status());
-    shipping.setAddress(service.getCustomerAddress(event.customerId()));
-  }
-
-  @AfterMapping
-  void postEnrichShipping(@MappingTarget Shipping shipping) {
-    shipping.setTrackingNumber(UUID.randomUUID().toString());
-  }
-
+  @Mapping(target = "address", expression = "java(service.getCustomerAddress(event.customerId()))")
+  @Mapping(target = "trackingNumber", expression = "java(java.util.UUID.randomUUID().toString())")
+  @Mapping(target = "shippingStatus", expression = "java(event.status())")
   public abstract Shipping eventToShipping(ShipmentEvent event);
 }

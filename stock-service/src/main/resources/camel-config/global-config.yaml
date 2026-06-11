@@ -13,3 +13,12 @@
           steps:
             - process:
                 ref: "exceptionProcessor"
+
+- routeConfiguration:
+    id: "KafkaExceptionHandler"
+    onException:
+      - onException:
+          exception:
+            - "org.apache.kafka.common.errors.TimeoutException"
+          handled:
+            constant: true

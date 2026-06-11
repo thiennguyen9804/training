@@ -1,6 +1,10 @@
 - rest:
     path: "/v1/stocks"
     post:
-      - uri: "/check"
-        type: "com.example.dto.StockDto[]"
+      - path: "/check"
+        type: "com.example.stock_service.dto.StockDto[]"
         to: "direct:checkStocks"
+    patch:
+      - path: "/shipping"
+        type: "com.example.stock_service.dto.UpdateShippingDto[]"
+        to: "direct:updateShipping"
